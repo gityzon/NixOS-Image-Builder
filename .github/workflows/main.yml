@@ -19,8 +19,14 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
 
+      - name: 拉取 NixOS 配置
+        run: |
+          cd
+          git clone https://github.com/gityzon/nixos-server-config.git
+          
       - name: 构建 NixOS 镜像
         run: |
+          cd nixos-server-config
           nix build .#nixosConfigurations.myVPS.config.system.build.diskImage
           
       - name: 上传构建结果
