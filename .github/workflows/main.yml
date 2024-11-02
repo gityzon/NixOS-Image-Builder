@@ -1,0 +1,30 @@
+name: Build NixOS Image
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v2
+
+      - name: 设置 Nix 环境
+        uses: cachix/install-nix-action@v16
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: 构建 NixOS 镜像
+        run: |
+          nix build .#nixosConfigurations.myVPS.config.system.build.diskImage
+          
+      - name: 上传构建结果
+        uses: actions/upload-artifact@v3
+        with:
+          name: NixOS-disk-image
+          path: ./result/disk-image.qcow2
